@@ -1,0 +1,79 @@
+.library-page {
+  padding-top: 52px;
+  padding-bottom: 80px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.library-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.library-eyebrow {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 6px;
+}
+
+.library-header h1 {
+  font-size: 2.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 24px;
+  text-align: center;
+}
+
+.empty-ornament {
+  width: 48px;
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.empty-ornament::before,
+.empty-ornament::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.empty-ornament::before { left: -14px; }
+.empty-ornament::after  { right: -14px; }
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 300px;
+  margin-bottom: 32px;
+  line-height: 1.7;
+  font-weight: 300;
+}
