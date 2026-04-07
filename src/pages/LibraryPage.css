@@ -64,6 +64,40 @@
   letter-spacing: -0.02em;
 }
 
+/* ── Currently Reading ──────────────────────────────────────── */
+.currently-reading-section {
+  margin-bottom: 44px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.currently-reading-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.currently-reading-row::-webkit-scrollbar {
+  height: 4px;
+}
+
+.currently-reading-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.currently-reading-row::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-full);
+}
+
+.currently-reading-row .book-card {
+  width: 160px;
+  flex-shrink: 0;
+}
+
 /* ── Controls block ─────────────────────────────────────────── */
 .library-controls {
   display: flex;

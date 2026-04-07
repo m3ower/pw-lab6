@@ -41,6 +41,8 @@ export default function LibraryPage() {
   const { books } = useBooks();
   const { filters, set, reset, filtered, allGenres, isFiltered } = useBookFilters(books);
 
+  const currentlyReading = books.filter(b => b.status === 'in-progress');
+
   const [view, setView] = useState(() => localStorage.getItem('shelf-view') || 'grid');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
@@ -79,6 +81,17 @@ export default function LibraryPage() {
           </button>
         </div>
       </header>
+
+      {currentlyReading.length > 0 && (
+        <section className="currently-reading-section">
+          <p className="library-eyebrow" style={{ marginBottom: '14px' }}>Currently Reading</p>
+          <div className="currently-reading-row">
+            {currentlyReading.map(book => (
+              <BookCard key={book.id} book={book} onEdit={openEdit} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {books.length > 0 && (
         <div className="library-controls">
