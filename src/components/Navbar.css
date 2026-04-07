@@ -108,3 +108,17 @@
   border-color: var(--text-muted);
   background-color: var(--bg-secondary);
 }
+
+@media (max-width: 640px) {
+  .navbar-inner {
+    gap: 16px;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+
+  .theme-toggle {
+    padding: 6px 10px;
+  }
+}

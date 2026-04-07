@@ -122,6 +122,12 @@ img {
   padding: 0 32px;
 }
 
+@media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
 /* ── Shared Buttons ────────────────────────────────────────── */
 .btn-primary {
   display: inline-flex;

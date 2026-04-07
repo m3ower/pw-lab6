@@ -316,13 +316,33 @@
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  .book-detail-page {
+    padding-top: 24px;
+  }
+
   .book-detail-header {
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
   }
 
   .book-detail-cover {
-    width: 140px;
+    width: 120px;
+  }
+
+  .detail-title {
+    font-size: 1.6rem;
+  }
+
+  .detail-actions {
+    flex-wrap: wrap;
+  }
+
+  .chapters-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }

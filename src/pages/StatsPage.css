@@ -451,4 +451,11 @@
 @media (max-width: 640px) {
   .stats-grid { grid-template-columns: 1fr; }
   .stats-section--wide { grid-column: 1; }
+
+  .stats-header h1 { font-size: 1.8rem; }
+
+  .genre-bar-label { width: 80px; }
+
+  .bar-chart { gap: 4px; }
+  .bar-label { font-size: 0.55rem; }
 }

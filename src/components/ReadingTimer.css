@@ -189,3 +189,19 @@
   border-color: #c0392b;
   background: color-mix(in srgb, #c0392b 8%, transparent);
 }
+
+@media (max-width: 640px) {
+  .timer-main {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .timer-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .session-delete {
+    opacity: 1;
+  }
+}
