@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
 import StarRating from './ui/StarRating';
@@ -6,8 +7,10 @@ import './BookCard.css';
 const STATUS_LABELS = {
   'not-started': 'Not Started',
   'in-progress': 'In Progress',
-  'completed': 'Completed',
+  'completed':   'Completed',
 };
+
+const STATUS_ORDER = ['not-started', 'in-progress', 'completed'];
 
 function CoverPlaceholder({ title, author }) {
   const initial = title?.charAt(0).toUpperCase() || '?';
@@ -49,8 +52,9 @@ function TrashIcon() {
 }
 
 export default function BookCard({ book, onEdit }) {
-  const { toggleLike, deleteBook } = useBooks();
+  const { toggleLike, deleteBook, updateBook } = useBooks();
   const navigate = useNavigate();
+  const [statusOpen, setStatusOpen] = useState(false);
 
   function handleDelete(e) {
     e.stopPropagation();
@@ -69,6 +73,17 @@ export default function BookCard({ book, onEdit }) {
     toggleLike(book.id);
   }
 
+  function handleStatusChange(e, newStatus) {
+    e.stopPropagation();
+    updateBook(book.id, { status: newStatus });
+    setStatusOpen(false);
+  }
+
+  function toggleStatusMenu(e) {
+    e.stopPropagation();
+    setStatusOpen(o => !o);
+  }
+
   const chaptersRead = book.status === 'completed'
     ? (book.totalChapters ?? 0)
     : (book.chaptersRead ?? 0);
@@ -83,9 +98,32 @@ export default function BookCard({ book, onEdit }) {
           ? <img src={book.coverImage} alt={book.title} />
           : <CoverPlaceholder title={book.title} author={book.author} />
         }
-        <span className={`status-badge status-badge--${book.status}`}>
-          {STATUS_LABELS[book.status]}
-        </span>
+        <div className="status-badge-wrap">
+          <button
+            className={`status-badge status-badge--${book.status}`}
+            onClick={toggleStatusMenu}
+            aria-label="Change status"
+            title="Click to change status"
+          >
+            {STATUS_LABELS[book.status]}
+          </button>
+          {statusOpen && (
+            <>
+              <div className="status-backdrop" onClick={e => { e.stopPropagation(); setStatusOpen(false); }} />
+              <div className="status-menu">
+                {STATUS_ORDER.map(s => (
+                  <button
+                    key={s}
+                    className={`status-menu-item status-menu-item--${s} ${book.status === s ? 'active' : ''}`}
+                    onClick={e => handleStatusChange(e, s)}
+                  >
+                    {STATUS_LABELS[s]}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
         <div className="book-card-actions">
           <button
             className={`action-btn like-btn ${book.liked ? 'liked' : ''}`}

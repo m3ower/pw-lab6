@@ -75,10 +75,15 @@
 }
 
 /* ── Status badge ───────────────────────────────────────────── */
-.status-badge {
+.status-badge-wrap {
   position: absolute;
   top: 10px;
   left: 10px;
+  z-index: 3;
+}
+
+.status-badge {
+  display: block;
   padding: 3px 9px;
   border-radius: var(--radius-sm);
   font-family: 'Lato', sans-serif;
@@ -86,6 +91,62 @@
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.status-badge:hover {
+  opacity: 0.85;
+}
+
+/* ── Status quick-change menu ───────────────────────────────── */
+.status-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}
+
+.status-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  z-index: 10;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  min-width: 130px;
+}
+
+.status-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.status-menu-item:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.status-menu-item.active {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.status-menu-item + .status-menu-item {
+  border-top: 1px solid var(--border);
 }
 
 .status-badge--not-started {
