@@ -18,6 +18,7 @@ const EMPTY_FORM = {
   link: '',
   coverImage: '',
   totalChapters: '',
+  chaptersRead: '',
   status: 'not-started',
   dateStarted: '',
   dateFinished: '',
@@ -41,14 +42,19 @@ export default function AddEditBookModal({ book, onClose }) {
   const [form, setForm] = useState(() => {
     if (isEdit) {
       return {
-        ...EMPTY_FORM,
-        ...book,
-        genre: book.genre ?? [],
-        tags: (book.tags ?? []).join(', '),
+        title:         book.title ?? '',
+        author:        book.author ?? '',
+        genre:         book.genre ?? [],
+        tags:          (book.tags ?? []).join(', '),
+        link:          book.link ?? '',
+        coverImage:    book.coverImage ?? '',
         totalChapters: book.totalChapters ?? '',
-        dateStarted: book.dateStarted ?? '',
-        dateFinished: book.dateFinished ?? '',
-        rating: book.rating ?? 0,
+        chaptersRead:  book.chaptersRead ?? '',
+        status:        book.status ?? 'not-started',
+        dateStarted:   book.dateStarted ?? '',
+        dateFinished:  book.dateFinished ?? '',
+        rating:        book.rating ?? 0,
+        notes:         book.notes ?? '',
       };
     }
     return { ...EMPTY_FORM };
@@ -92,17 +98,22 @@ export default function AddEditBookModal({ book, onClose }) {
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
 
+    // Only send the fields this form controls — never overwrite chapters, liked, id, dateAdded
     const payload = {
-      ...form,
       title: form.title.trim(),
       author: form.author.trim(),
+      genre: form.genre,
       tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
-      totalChapters: form.totalChapters ? Number(form.totalChapters) : null,
-      rating: form.rating || null,
-      dateStarted: form.dateStarted || null,
-      dateFinished: form.dateFinished || null,
       link: form.link.trim() || null,
       coverImage: form.coverImage.trim() || null,
+      totalChapters: form.totalChapters ? Number(form.totalChapters) : null,
+      chaptersRead: form.status === 'completed'
+        ? (form.totalChapters ? Number(form.totalChapters) : (book?.chaptersRead ?? 0))
+        : (form.chaptersRead !== '' ? Number(form.chaptersRead) : (book?.chaptersRead ?? 0)),
+      status: form.status,
+      dateStarted: form.dateStarted || null,
+      dateFinished: form.dateFinished || null,
+      rating: form.rating || null,
       notes: form.notes.trim() || null,
     };
 
@@ -269,6 +280,36 @@ export default function AddEditBookModal({ book, onClose }) {
                   </div>
                 )}
               </div>
+
+              {form.status === 'in-progress' && form.totalChapters && (
+                <div className="form-group chapters-read-group" style={{ marginTop: '14px' }}>
+                  <label htmlFor="chaptersRead">Chapters Read</label>
+                  <div className="chapters-read-input-wrap">
+                    <button
+                      type="button"
+                      className="ch-step-btn"
+                      onClick={() => set('chaptersRead', Math.max(0, (Number(form.chaptersRead) || 0) - 1))}
+                      disabled={(Number(form.chaptersRead) || 0) <= 0}
+                    >−</button>
+                    <input
+                      id="chaptersRead"
+                      type="number"
+                      min="0"
+                      max={form.totalChapters}
+                      value={form.chaptersRead}
+                      onChange={e => set('chaptersRead', Math.min(Number(form.totalChapters), Math.max(0, Number(e.target.value))))}
+                      placeholder="0"
+                    />
+                    <span className="ch-read-total">of {form.totalChapters}</span>
+                    <button
+                      type="button"
+                      className="ch-step-btn"
+                      onClick={() => set('chaptersRead', Math.min(Number(form.totalChapters), (Number(form.chaptersRead) || 0) + 1))}
+                      disabled={(Number(form.chaptersRead) || 0) >= Number(form.totalChapters)}
+                    >+</button>
+                  </div>
+                </div>
+              )}
 
               {form.status === 'completed' && (
                 <div className="form-group" style={{ marginTop: '14px' }}>

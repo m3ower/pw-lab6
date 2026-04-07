@@ -38,13 +38,55 @@ export function BooksProvider({ children }) {
   }
 
   function toggleLike(id) {
-    setBooks(prev =>
-      prev.map(b => (b.id === id ? { ...b, liked: !b.liked } : b))
-    );
+    setBooks(prev => prev.map(b => (b.id === id ? { ...b, liked: !b.liked } : b)));
+  }
+
+  // ── Chapter operations ──────────────────────────────────────
+  function addChapter(bookId, chapterData) {
+    const chapter = {
+      id: crypto.randomUUID(),
+      dateAdded: new Date().toISOString(),
+      isRead: false,
+      quotes: [],
+      ...chapterData,
+    };
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, chapters: [...(b.chapters ?? []), chapter] }
+        : b
+    ));
+    return chapter;
+  }
+
+  function updateChapter(bookId, chapterId, changes) {
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, chapters: b.chapters.map(c => c.id === chapterId ? { ...c, ...changes } : c) }
+        : b
+    ));
+  }
+
+  function deleteChapter(bookId, chapterId) {
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, chapters: b.chapters.filter(c => c.id !== chapterId) }
+        : b
+    ));
+  }
+
+  function toggleChapterRead(bookId, chapterId) {
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, chapters: b.chapters.map(c => c.id === chapterId ? { ...c, isRead: !c.isRead } : c) }
+        : b
+    ));
   }
 
   return (
-    <BooksContext.Provider value={{ books, addBook, updateBook, deleteBook, toggleLike }}>
+    <BooksContext.Provider value={{
+      books, addBook, updateBook, deleteBook, toggleLike,
+      addChapter, updateChapter, deleteChapter, toggleChapterRead,
+    }}>
       {children}
     </BooksContext.Provider>
   );

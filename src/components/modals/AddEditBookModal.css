@@ -265,6 +265,55 @@
   font-weight: 700;
 }
 
+/* ── Chapters read stepper ──────────────────────────────────── */
+.chapters-read-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chapters-read-input-wrap input {
+  width: 72px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ch-read-total {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+.ch-step-btn {
+  width: 30px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color var(--transition), color var(--transition), background-color var(--transition);
+}
+
+.ch-step-btn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+}
+
+.ch-step-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 /* ── Footer ─────────────────────────────────────────────────── */
 .modal-footer {
   display: flex;

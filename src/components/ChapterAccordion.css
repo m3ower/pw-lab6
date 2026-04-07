@@ -1,0 +1,211 @@
+.chapter-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ── Chapter item ───────────────────────────────────────────── */
+.chapter-item {
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--transition);
+}
+
+.chapter-item:last-child {
+  border-bottom: none;
+}
+
+.chapter-item.open {
+  background: var(--bg-secondary);
+}
+
+/* ── Header row ─────────────────────────────────────────────── */
+.chapter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  gap: 12px;
+  transition: background-color var(--transition);
+}
+
+.chapter-header:hover {
+  background: var(--bg-secondary);
+}
+
+.chapter-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Read indicator dot */
+.read-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+.read-dot:hover {
+  border-color: var(--accent-primary);
+}
+
+.read-dot.read {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.chapter-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.chapter-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapter-name {
+  font-weight: 400;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.chapter-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+.no-content-hint {
+  font-style: italic;
+}
+
+/* ── Actions ────────────────────────────────────────────────── */
+.chapter-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.ch-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition), color var(--transition),
+              border-color var(--transition), background-color var(--transition);
+}
+
+.chapter-header:hover .ch-action-btn {
+  opacity: 1;
+}
+
+.ch-action-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+  background: var(--bg-card);
+}
+
+.ch-delete-btn:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+  background: color-mix(in srgb, #c0392b 8%, transparent);
+}
+
+/* ── Expanded body ──────────────────────────────────────────── */
+.chapter-body {
+  padding: 0 18px 20px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: ch-expand 180ms ease;
+}
+
+@keyframes ch-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ch-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ch-section-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ch-text {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 300;
+  white-space: pre-wrap;
+}
+
+/* ── Quotes ─────────────────────────────────────────────────── */
+.ch-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ch-quote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.ch-quote-icon {
+  color: var(--accent-primary);
+  opacity: 0.5;
+  flex-shrink: 0;
+  margin-top: 2px;
+}

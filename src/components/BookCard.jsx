@@ -69,7 +69,9 @@ export default function BookCard({ book, onEdit }) {
     toggleLike(book.id);
   }
 
-  const chaptersRead = book.chapters?.filter(c => c.isRead).length ?? 0;
+  const chaptersRead = book.status === 'completed'
+    ? (book.totalChapters ?? 0)
+    : (book.chaptersRead ?? 0);
   const progress = book.totalChapters > 0
     ? Math.round((chaptersRead / book.totalChapters) * 100)
     : null;
