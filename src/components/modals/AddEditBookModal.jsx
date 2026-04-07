@@ -3,6 +3,77 @@ import { useBooks } from '../../context/BooksContext';
 import StarRating from '../ui/StarRating';
 import './AddEditBookModal.css';
 
+// Maps Open Library subjects → our genre list (only confident matches)
+const SUBJECT_MAP = {
+  'fiction':              'Fiction',
+  'novel':                'Fiction',
+  'non-fiction':          'Non-Fiction',
+  'nonfiction':           'Non-Fiction',
+  'mystery':              'Mystery',
+  'detective':            'Mystery',
+  'crime fiction':        'Mystery',
+  'detective fiction':    'Mystery',
+  'fantasy':              'Fantasy',
+  'fantasy fiction':      'Fantasy',
+  'science fiction':      'Science Fiction',
+  'sf':                   'Science Fiction',
+  'romance':              'Romance',
+  'love stories':         'Romance',
+  'thriller':             'Thriller',
+  'suspense':             'Thriller',
+  'horror':               'Horror',
+  'ghost stories':        'Horror',
+  'biography':            'Biography',
+  'autobiography':        'Biography',
+  'memoir':               'Biography',
+  'history':              'History',
+  'historical fiction':   'History',
+  'self-help':            'Self-Help',
+  'self help':            'Self-Help',
+  'personal development': 'Self-Help',
+  'philosophy':           'Philosophy',
+  'science':              'Science',
+  'poetry':               'Poetry',
+  'poems':                'Poetry',
+  'classic':              'Classic Literature',
+  'classics':             'Classic Literature',
+  'literary fiction':     'Fiction',
+  'contemporary fiction': 'Contemporary',
+  'young adult':          'Contemporary',
+};
+
+function matchGenres(subjects = []) {
+  const matched = new Set();
+  for (const s of subjects) {
+    const key = s.toLowerCase().trim();
+    if (SUBJECT_MAP[key]) matched.add(SUBJECT_MAP[key]);
+    // also check if any genre name is contained in the subject
+    for (const [pattern, genre] of Object.entries(SUBJECT_MAP)) {
+      if (key.includes(pattern)) matched.add(genre);
+    }
+    if (matched.size >= 3) break; // cap at 3
+  }
+  return [...matched];
+}
+
+async function fetchBookData(title, author) {
+  const q = [
+    title  && `title=${encodeURIComponent(title)}`,
+    author && `author=${encodeURIComponent(author)}`,
+  ].filter(Boolean).join('&');
+
+  const res  = await fetch(`https://openlibrary.org/search.json?${q}&limit=5&fields=cover_i,author_name,title,subject`);
+  const data = await res.json();
+  const doc  = data.docs?.find(d => d.cover_i) ?? data.docs?.[0];
+  if (!doc) return null;
+
+  return {
+    coverUrl:   doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg` : null,
+    authorName: doc.author_name?.[0] ?? null,
+    genres:     matchGenres(doc.subject),
+  };
+}
+
 const GENRES = [
   'Fiction', 'Non-Fiction', 'Mystery', 'Fantasy', 'Science Fiction',
   'Romance', 'Thriller', 'Biography', 'History', 'Self-Help',
@@ -61,6 +132,30 @@ export default function AddEditBookModal({ book, onClose }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [fetchState, setFetchState] = useState('idle'); // idle | loading | done | error
+  const [fetchedAuthor, setFetchedAuthor] = useState(null);
+  const [fetchedGenres, setFetchedGenres] = useState([]);
+
+  async function handleFetchCover() {
+    if (!form.title.trim()) return;
+    setFetchState('loading');
+    setFetchedAuthor(null);
+    setFetchedGenres([]);
+    try {
+      const result = await fetchBookData(form.title, form.author);
+      if (!result || !result.coverUrl) { setFetchState('error'); return; }
+      set('coverImage', result.coverUrl);
+      if (result.authorName && !form.author.trim()) {
+        setFetchedAuthor(result.authorName);
+      }
+      // only suggest genres that aren't already selected
+      const newGenres = result.genres.filter(g => !form.genre.includes(g));
+      if (newGenres.length > 0) setFetchedGenres(newGenres);
+      setFetchState('done');
+    } catch {
+      setFetchState('error');
+    }
+  }
 
   // focus first input on open
   useEffect(() => { firstInputRef.current?.focus(); }, []);
@@ -168,13 +263,61 @@ export default function AddEditBookModal({ book, onClose }) {
               <div className="form-row">
                 <div className="form-group form-group--grow">
                   <label htmlFor="coverImage">Cover Image URL</label>
-                  <input
-                    id="coverImage"
-                    type="url"
-                    value={form.coverImage}
-                    onChange={e => set('coverImage', e.target.value)}
-                    placeholder="https://..."
-                  />
+                  <div className="cover-input-row">
+                    <input
+                      id="coverImage"
+                      type="url"
+                      value={form.coverImage}
+                      onChange={e => { set('coverImage', e.target.value); setFetchState('idle'); }}
+                      placeholder="https://... or use auto-fetch →"
+                    />
+                    <button
+                      type="button"
+                      className={`fetch-cover-btn ${fetchState === 'loading' ? 'loading' : ''}`}
+                      onClick={handleFetchCover}
+                      disabled={!form.title.trim() || fetchState === 'loading'}
+                      title="Auto-fetch cover from Open Library"
+                    >
+                      {fetchState === 'loading' ? <span className="fetch-spinner" /> : 'Auto-fetch'}
+                    </button>
+                  </div>
+                  {fetchState === 'error' && (
+                    <span className="fetch-msg fetch-msg--error">No cover found — try a different title.</span>
+                  )}
+                  {fetchState === 'done' && (
+                    <span className="fetch-msg fetch-msg--ok">Cover fetched from Open Library.</span>
+                  )}
+                  {fetchedAuthor && (
+                    <div className="fetch-author-suggest">
+                      Author found: <strong>{fetchedAuthor}</strong>
+                      <button type="button" className="fetch-use-author" onClick={() => { set('author', fetchedAuthor); setFetchedAuthor(null); }}>
+                        Use this
+                      </button>
+                    </div>
+                  )}
+                  {fetchedGenres.length > 0 && (
+                    <div className="fetch-author-suggest">
+                      Genres found:
+                      {fetchedGenres.map(g => (
+                        <button
+                          key={g}
+                          type="button"
+                          className="fetch-use-author"
+                          onClick={() => {
+                            set('genre', [...form.genre, g]);
+                            setFetchedGenres(prev => prev.filter(x => x !== g));
+                          }}
+                        >
+                          + {g}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {form.coverImage && (
+                    <div className="cover-preview">
+                      <img src={form.coverImage} alt="Cover preview" onError={e => e.target.style.display = 'none'} />
+                    </div>
+                  )}
                 </div>
                 <div className="form-group form-group--grow">
                   <label htmlFor="link">Book Link</label>

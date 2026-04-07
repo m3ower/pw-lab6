@@ -265,6 +265,114 @@
   font-weight: 700;
 }
 
+/* ── Cover auto-fetch ───────────────────────────────────────── */
+.cover-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cover-input-row input {
+  flex: 1;
+}
+
+.fetch-cover-btn {
+  flex-shrink: 0;
+  padding: 0 14px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fetch-cover-btn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+}
+
+.fetch-cover-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fetch-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fetch-msg {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.fetch-msg--ok    { color: #3a7d44; }
+.fetch-msg--error { color: #c0392b; }
+
+[data-theme="dark"] .fetch-msg--ok { color: #6ecf80; }
+
+.fetch-author-suggest {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.fetch-use-author {
+  padding: 2px 10px;
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--accent-primary);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.fetch-use-author:hover {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+.cover-preview {
+  margin-top: 10px;
+  width: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.cover-preview img {
+  width: 100%;
+  display: block;
+}
+
 /* ── Chapters read stepper ──────────────────────────────────── */
 .chapters-read-input-wrap {
   display: flex;
