@@ -13,6 +13,41 @@
   border-bottom: 1px solid var(--border);
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.view-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.view-btn:first-child { border-right: 1px solid var(--border); }
+
+.view-btn:hover { color: var(--text-primary); background: var(--bg-secondary); }
+
+.view-btn.active {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+}
+
 .library-eyebrow {
   font-family: 'Lato', sans-serif;
   font-size: 0.75rem;

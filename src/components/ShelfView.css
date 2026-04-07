@@ -1,0 +1,145 @@
+.shelf-view {
+  background: var(--shelf-bg, #C8A882);
+  border-radius: var(--radius-md);
+  padding: 0 16px;
+  overflow-x: auto;
+}
+
+[data-theme="dark"] .shelf-view {
+  --shelf-bg: #1E140A;
+}
+
+/* ── Row ────────────────────────────────────────────────────── */
+.shelf-row {
+  padding-top: 32px;
+}
+
+.shelf-books {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  flex-wrap: wrap;
+  padding: 0 8px;
+  min-height: 180px;
+}
+
+/* ── Plank ──────────────────────────────────────────────────── */
+.shelf-plank {
+  height: 18px;
+  background: linear-gradient(
+    to bottom,
+    #6B3F1A 0%,
+    #8B5230 40%,
+    #5C2E0E 100%
+  );
+  border-radius: 2px;
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  margin: 0 -8px;
+}
+
+[data-theme="dark"] .shelf-plank {
+  background: linear-gradient(
+    to bottom,
+    #3A200A 0%,
+    #4A2810 40%,
+    #2A1408 100%
+  );
+}
+
+/* ── Spine ──────────────────────────────────────────────────── */
+.book-spine {
+  position: relative;
+  width: var(--spine-width, 38px);
+  height: 170px;
+  background: var(--spine-color);
+  border-radius: 2px 2px 0 0;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.3), inset -2px 0 6px rgba(0,0,0,0.15);
+}
+
+.book-spine:hover {
+  transform: translateY(-12px);
+  box-shadow: 4px 0 16px rgba(0,0,0,0.4), inset -2px 0 6px rgba(0,0,0,0.15);
+  z-index: 2;
+}
+
+/* ── Cover strip (if image available) ──────────────────────── */
+.spine-cover-strip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.spine-cover-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+/* ── Text ───────────────────────────────────────────────────── */
+.spine-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  padding: 8px 4px;
+  z-index: 1;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.spine-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 120px;
+}
+
+.spine-author {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.58rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 80px;
+}
+
+/* ── Status tab ─────────────────────────────────────────────── */
+.spine-status-tab {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 6px;
+  border-radius: 0 0 4px 4px;
+}
+
+/* ── Liked ──────────────────────────────────────────────────── */
+.spine-liked {
+  position: absolute;
+  bottom: 5px;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.75);
+  z-index: 1;
+}

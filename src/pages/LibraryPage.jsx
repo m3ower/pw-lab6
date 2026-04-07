@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useBooks } from '../context/BooksContext';
 import { useBookFilters, SORT_OPTIONS } from '../hooks/useBookFilters';
 import BookCard from '../components/BookCard';
+import ShelfView from '../components/ShelfView';
 import AddEditBookModal from '../components/modals/AddEditBookModal';
 import './LibraryPage.css';
 
@@ -40,8 +41,11 @@ export default function LibraryPage() {
   const { books } = useBooks();
   const { filters, set, reset, filtered, allGenres, isFiltered } = useBookFilters(books);
 
+  const [view, setView] = useState(() => localStorage.getItem('shelf-view') || 'grid');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
+
+  function changeView(v) { setView(v); localStorage.setItem('shelf-view', v); }
 
   function openAdd()        { setEditingBook(null); setModalOpen(true); }
   function openEdit(book)   { setEditingBook(book); setModalOpen(true); }
@@ -54,9 +58,26 @@ export default function LibraryPage() {
           <p className="library-eyebrow">Your collection</p>
           <h1>Library</h1>
         </div>
-        <button className="btn-primary" onClick={openAdd}>
-          <PlusIcon /> Add Book
-        </button>
+        <div className="header-right">
+          <div className="view-toggle">
+            <button className={`view-btn ${view === 'grid' ? 'active' : ''}`} onClick={() => changeView('grid')} title="Grid view">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+              </svg>
+            </button>
+            <button className={`view-btn ${view === 'shelf' ? 'active' : ''}`} onClick={() => changeView('shelf')} title="Shelf view">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="4" y2="18"/><line x1="9" y1="4" x2="9" y2="18"/>
+                <line x1="14" y1="5" x2="14" y2="18"/><line x1="19" y1="3" x2="19" y2="18"/>
+                <line x1="2" y1="18" x2="22" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <button className="btn-primary" onClick={openAdd}>
+            <PlusIcon /> Add Book
+          </button>
+        </div>
       </header>
 
       {books.length > 0 && (
@@ -169,6 +190,8 @@ export default function LibraryPage() {
           <p>Try adjusting your search or filters.</p>
           <button className="btn-ghost" onClick={reset}>Clear all filters</button>
         </div>
+      ) : view === 'shelf' ? (
+        <ShelfView books={filtered} />
       ) : (
         <div className="book-grid">
           {filtered.map(book => (
