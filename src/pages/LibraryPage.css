@@ -29,6 +29,13 @@
   letter-spacing: -0.02em;
 }
 
+/* ── Book grid ──────────────────────────────────────────────── */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 22px;
+}
+
 /* ── Empty State ─────────────────────────────────────────────── */
 .empty-state {
   display: flex;
