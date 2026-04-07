@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
 import StarRating from '../components/ui/StarRating';
 import ChapterAccordion from '../components/ChapterAccordion';
+import ReadingTimer from '../components/ReadingTimer';
 import AddEditBookModal from '../components/modals/AddEditBookModal';
 import AddEditChapterModal from '../components/modals/AddEditChapterModal';
 import './BookDetailPage.css';
@@ -201,6 +202,11 @@ export default function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Reading timer ── */}
+      <section className="detail-section">
+        <ReadingTimer bookId={book.id} sessions={book.sessions ?? []} />
+      </section>
 
       {/* ── General notes ── */}
       {book.notes && (

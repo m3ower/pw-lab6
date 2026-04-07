@@ -82,10 +82,28 @@ export function BooksProvider({ children }) {
     ));
   }
 
+  // ── Reading session operations ───────────────────────────────
+  function addSession(bookId, session) {
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, sessions: [...(b.sessions ?? []), session] }
+        : b
+    ));
+  }
+
+  function deleteSession(bookId, sessionId) {
+    setBooks(prev => prev.map(b =>
+      b.id === bookId
+        ? { ...b, sessions: (b.sessions ?? []).filter(s => s.id !== sessionId) }
+        : b
+    ));
+  }
+
   return (
     <BooksContext.Provider value={{
       books, addBook, updateBook, deleteBook, toggleLike,
       addChapter, updateChapter, deleteChapter, toggleChapterRead,
+      addSession, deleteSession,
     }}>
       {children}
     </BooksContext.Provider>
