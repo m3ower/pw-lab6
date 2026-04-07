@@ -11,7 +11,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <BooksProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/pw-lab6">
           <Navbar />
           <main className="page-wrapper">
             <Routes>
