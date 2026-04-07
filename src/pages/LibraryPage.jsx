@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useBooks } from '../context/BooksContext';
 import { useBookFilters, SORT_OPTIONS } from '../hooks/useBookFilters';
 import BookCard from '../components/BookCard';
@@ -38,7 +38,7 @@ const STATUS_TABS = [
 ];
 
 export default function LibraryPage() {
-  const { books } = useBooks();
+  const { books, importBooks } = useBooks();
   const { filters, set, reset, filtered, allGenres, isFiltered } = useBookFilters(books);
 
   const currentlyReading = books.filter(b => b.status === 'in-progress');
@@ -46,8 +46,45 @@ export default function LibraryPage() {
   const [view, setView] = useState(() => localStorage.getItem('shelf-view') || 'grid');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
+  const [importError, setImportError] = useState('');
+  const fileInputRef = useRef(null);
 
   function changeView(v) { setView(v); localStorage.setItem('shelf-view', v); }
+
+  function handleExport() {
+    const blob = new Blob([JSON.stringify(books, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `my-shelf-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = evt => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!Array.isArray(data)) throw new Error('Invalid format');
+        const mode = books.length === 0
+          ? 'replace'
+          : window.confirm(
+              `You already have ${books.length} book(s).\n\nOK → Merge (keep existing + add new)\nCancel → Replace all with imported data`
+            )
+            ? 'merge'
+            : 'replace';
+        importBooks(data, mode);
+        setImportError('');
+      } catch {
+        setImportError('Could not read file. Make sure it\'s a valid My Shelf backup.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
 
   function openAdd()        { setEditingBook(null); setModalOpen(true); }
   function openEdit(book)   { setEditingBook(book); setModalOpen(true); }
@@ -61,6 +98,19 @@ export default function LibraryPage() {
           <h1>Library</h1>
         </div>
         <div className="header-right">
+          <button className="btn-ghost" onClick={handleExport} title="Export library as JSON">
+            Export
+          </button>
+          <button className="btn-ghost" onClick={() => fileInputRef.current.click()} title="Import library from JSON">
+            Import
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImportFile}
+          />
           <div className="view-toggle">
             <button className={`view-btn ${view === 'grid' ? 'active' : ''}`} onClick={() => changeView('grid')} title="Grid view">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,6 +131,10 @@ export default function LibraryPage() {
           </button>
         </div>
       </header>
+
+      {importError && (
+        <p className="import-error">{importError}</p>
+      )}
 
       {currentlyReading.length > 0 && (
         <section className="currently-reading-section">

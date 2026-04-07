@@ -99,11 +99,24 @@ export function BooksProvider({ children }) {
     ));
   }
 
+  function importBooks(incoming, mode) {
+    if (mode === 'replace') {
+      setBooks(incoming);
+    } else {
+      // merge: keep existing books, add incoming ones that don't share an id
+      setBooks(prev => {
+        const existingIds = new Set(prev.map(b => b.id));
+        const newBooks = incoming.filter(b => !existingIds.has(b.id));
+        return [...prev, ...newBooks];
+      });
+    }
+  }
+
   return (
     <BooksContext.Provider value={{
       books, addBook, updateBook, deleteBook, toggleLike,
       addChapter, updateChapter, deleteChapter, toggleChapterRead,
-      addSession, deleteSession,
+      addSession, deleteSession, importBooks,
     }}>
       {children}
     </BooksContext.Provider>
