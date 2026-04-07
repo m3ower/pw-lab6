@@ -102,7 +102,7 @@ export default function LibraryPage() {
             <input
               className="search-input"
               type="text"
-              placeholder="Search by title, author or tag…"
+              placeholder="Search by title, author, tag or notes…"
               value={filters.search}
               onChange={e => set('search', e.target.value)}
             />

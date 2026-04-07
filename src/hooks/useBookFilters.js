@@ -41,7 +41,13 @@ export function useBookFilters(books) {
       result = result.filter(b =>
         b.title?.toLowerCase().includes(q) ||
         b.author?.toLowerCase().includes(q) ||
-        b.tags?.some(t => t.toLowerCase().includes(q))
+        b.tags?.some(t => t.toLowerCase().includes(q)) ||
+        b.notes?.toLowerCase().includes(q) ||
+        b.chapters?.some(ch =>
+          ch.notes?.toLowerCase().includes(q) ||
+          ch.questions?.toLowerCase().includes(q) ||
+          ch.quotes?.some(quote => quote.toLowerCase().includes(q))
+        )
       );
     }
 
