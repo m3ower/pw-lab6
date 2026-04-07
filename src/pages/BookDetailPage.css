@@ -213,6 +213,53 @@
   background: color-mix(in srgb, #c0392b 8%, transparent);
 }
 
+/* ── Export dropdown ────────────────────────────────────────── */
+.export-dropdown {
+  position: relative;
+}
+
+.export-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.export-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.export-menu button:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.export-menu button + button {
+  border-top: 1px solid var(--border);
+}
+
 /* ── Sections ───────────────────────────────────────────────── */
 .detail-section {
   margin-bottom: 48px;

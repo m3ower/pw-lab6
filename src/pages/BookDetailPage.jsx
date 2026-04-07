@@ -6,6 +6,7 @@ import ChapterAccordion from '../components/ChapterAccordion';
 import ReadingTimer from '../components/ReadingTimer';
 import AddEditBookModal from '../components/modals/AddEditBookModal';
 import AddEditChapterModal from '../components/modals/AddEditChapterModal';
+import { exportAsText, exportAsPrint } from '../utils/exportNotes';
 import './BookDetailPage.css';
 
 const STATUS_LABELS = {
@@ -53,6 +54,16 @@ function PlusIcon() {
   );
 }
 
+function ExportIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
+
 function CoverPlaceholder({ title }) {
   return (
     <div className="detail-cover-placeholder">
@@ -71,6 +82,7 @@ export default function BookDetailPage() {
   const [editBookOpen, setEditBookOpen]       = useState(false);
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [editingChapter, setEditingChapter]   = useState(null);
+  const [exportOpen, setExportOpen]           = useState(false);
 
   if (!book) {
     return (
@@ -199,6 +211,29 @@ export default function BookDetailPage() {
               <HeartIcon filled={book.liked} />
               {book.liked ? 'Liked' : 'Like'}
             </button>
+            <div className="export-dropdown">
+              <button
+                className="btn-ghost"
+                onClick={() => setExportOpen(o => !o)}
+                aria-haspopup="true"
+                aria-expanded={exportOpen}
+              >
+                <ExportIcon /> Export
+              </button>
+              {exportOpen && (
+                <>
+                  <div className="export-backdrop" onClick={() => setExportOpen(false)} />
+                  <div className="export-menu">
+                    <button onClick={() => { exportAsText(book); setExportOpen(false); }}>
+                      Download .txt
+                    </button>
+                    <button onClick={() => { exportAsPrint(book); setExportOpen(false); }}>
+                      Print / Save as PDF
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
