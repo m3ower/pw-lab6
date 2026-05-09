@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const { createToken, ROLE_PERMISSIONS } = require('./src/auth');
+const booksRouter = require('./src/routes/books');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,8 @@ app.post('/token', (req, res) => {
   const payload = role ? { role } : { permissions };
   res.json({ token: createToken(payload), availableRoles: Object.keys(ROLE_PERMISSIONS) });
 });
+
+app.use('/books', booksRouter);
 
 app.listen(PORT, () =>
   console.log(`My Shelf API running at http://localhost:${PORT}`)
