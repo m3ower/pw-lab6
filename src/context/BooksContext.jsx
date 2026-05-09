@@ -1,72 +1,61 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import * as api from '../api/booksApi';
 
 const BooksContext = createContext(null);
-const STORAGE_KEY = 'shelf-books';
 
 export function BooksProvider({ children }) {
-  const [books, setBooks] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Load books from API on mount
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
-  }, [books]);
+    api.fetchBooks()
+      .then(setBooks)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
-  function addBook(bookData) {
-    const book = {
-      id: crypto.randomUUID(),
-      dateAdded: new Date().toISOString(),
-      liked: false,
-      chapters: [],
-      ...bookData,
-    };
+  async function addBook(bookData) {
+    const book = await api.createBook(bookData);
     setBooks(prev => [book, ...prev]);
     return book;
   }
 
-  function updateBook(id, changes) {
-    setBooks(prev => prev.map(b => (b.id === id ? { ...b, ...changes } : b)));
+  async function updateBook(id, changes) {
+    const updated = await api.updateBook(id, changes);
+    setBooks(prev => prev.map(b => (b.id === id ? updated : b)));
   }
 
-  function deleteBook(id) {
+  async function deleteBook(id) {
+    await api.deleteBook(id);
     setBooks(prev => prev.filter(b => b.id !== id));
   }
 
-  function toggleLike(id) {
-    setBooks(prev => prev.map(b => (b.id === id ? { ...b, liked: !b.liked } : b)));
+  async function toggleLike(id) {
+    const book = books.find(b => b.id === id);
+    if (book) await updateBook(id, { liked: !book.liked });
   }
 
-  // ── Chapter operations ──────────────────────────────────────
-  function addChapter(bookId, chapterData) {
-    const chapter = {
-      id: crypto.randomUUID(),
-      dateAdded: new Date().toISOString(),
-      isRead: false,
-      quotes: [],
-      ...chapterData,
-    };
+  // ── Chapters ─────────────────────────────────────────────
+  async function addChapter(bookId, chapterData) {
+    const chapter = await api.createChapter(bookId, chapterData);
     setBooks(prev => prev.map(b =>
-      b.id === bookId
-        ? { ...b, chapters: [...(b.chapters ?? []), chapter] }
-        : b
+      b.id === bookId ? { ...b, chapters: [...(b.chapters ?? []), chapter] } : b
     ));
     return chapter;
   }
 
-  function updateChapter(bookId, chapterId, changes) {
+  async function updateChapter(bookId, chapterId, changes) {
+    const updated = await api.updateChapter(bookId, chapterId, changes);
     setBooks(prev => prev.map(b =>
       b.id === bookId
-        ? { ...b, chapters: b.chapters.map(c => c.id === chapterId ? { ...c, ...changes } : c) }
+        ? { ...b, chapters: b.chapters.map(c => (c.id === chapterId ? updated : c)) }
         : b
     ));
   }
 
-  function deleteChapter(bookId, chapterId) {
+  async function deleteChapter(bookId, chapterId) {
+    await api.deleteChapter(bookId, chapterId);
     setBooks(prev => prev.map(b =>
       b.id === bookId
         ? { ...b, chapters: b.chapters.filter(c => c.id !== chapterId) }
@@ -74,20 +63,16 @@ export function BooksProvider({ children }) {
     ));
   }
 
-  function toggleChapterRead(bookId, chapterId) {
-    setBooks(prev => prev.map(b =>
-      b.id === bookId
-        ? { ...b, chapters: b.chapters.map(c => c.id === chapterId ? { ...c, isRead: !c.isRead } : c) }
-        : b
-    ));
+  async function toggleChapterRead(bookId, chapterId) {
+    const book = books.find(b => b.id === bookId);
+    const chapter = book?.chapters.find(c => c.id === chapterId);
+    if (chapter) await updateChapter(bookId, chapterId, { isRead: !chapter.isRead });
   }
 
-  // ── Reading session operations ───────────────────────────────
+  // ── Reading sessions (local only) ────────────────────────
   function addSession(bookId, session) {
     setBooks(prev => prev.map(b =>
-      b.id === bookId
-        ? { ...b, sessions: [...(b.sessions ?? []), session] }
-        : b
+      b.id === bookId ? { ...b, sessions: [...(b.sessions ?? []), session] } : b
     ));
   }
 
@@ -99,22 +84,23 @@ export function BooksProvider({ children }) {
     ));
   }
 
-  function importBooks(incoming, mode) {
+  // ── Import/Export ─────────────────────────────────────────
+  async function importBooks(incoming, mode) {
     if (mode === 'replace') {
-      setBooks(incoming);
+      for (const b of incoming) await api.createBook(b).catch(() => {});
     } else {
-      // merge: keep existing books, add incoming ones that don't share an id
-      setBooks(prev => {
-        const existingIds = new Set(prev.map(b => b.id));
-        const newBooks = incoming.filter(b => !existingIds.has(b.id));
-        return [...prev, ...newBooks];
-      });
+      const existingIds = new Set(books.map(b => b.id));
+      for (const b of incoming.filter(b => !existingIds.has(b.id)))
+        await api.createBook(b).catch(() => {});
     }
+    const fresh = await api.fetchBooks();
+    setBooks(fresh);
   }
 
   return (
     <BooksContext.Provider value={{
-      books, addBook, updateBook, deleteBook, toggleLike,
+      books, loading,
+      addBook, updateBook, deleteBook, toggleLike,
       addChapter, updateChapter, deleteChapter, toggleChapterRead,
       addSession, deleteSession, importBooks,
     }}>

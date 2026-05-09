@@ -38,7 +38,8 @@ const STATUS_TABS = [
 ];
 
 export default function LibraryPage() {
-  const { books, importBooks } = useBooks();
+  const { books, importBooks, loading } = useBooks();
+  if (loading) return <div className="container" style={{ paddingTop: '80px', color: 'var(--text-muted)' }}>Loading…</div>;
   const { filters, set, reset, filtered, allGenres, isFiltered } = useBookFilters(books);
 
   const currentlyReading = books.filter(b => b.status === 'in-progress');
