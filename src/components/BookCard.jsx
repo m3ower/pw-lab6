@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
+import { useAuth } from '../context/AuthContext';
 import StarRating from './ui/StarRating';
 import './BookCard.css';
 
@@ -53,8 +54,12 @@ function TrashIcon() {
 
 export default function BookCard({ book, onEdit }) {
   const { toggleLike, deleteBook, updateBook } = useBooks();
+  const { hasPermission } = useAuth();
   const navigate = useNavigate();
   const [statusOpen, setStatusOpen] = useState(false);
+
+  const canWrite  = hasPermission('WRITE');
+  const canDelete = hasPermission('DELETE');
 
   function handleDelete(e) {
     e.stopPropagation();
@@ -103,7 +108,8 @@ export default function BookCard({ book, onEdit }) {
             className={`status-badge status-badge--${book.status}`}
             onClick={toggleStatusMenu}
             aria-label="Change status"
-            title="Click to change status"
+            title={canWrite ? 'Click to change status' : 'WRITE permission required'}
+            disabled={!canWrite}
           >
             {STATUS_LABELS[book.status]}
           </button>
@@ -129,13 +135,27 @@ export default function BookCard({ book, onEdit }) {
             className={`action-btn like-btn ${book.liked ? 'liked' : ''}`}
             onClick={handleLike}
             aria-label={book.liked ? 'Unlike' : 'Like'}
+            disabled={!canWrite}
+            title={canWrite ? undefined : 'WRITE permission required'}
           >
             <HeartIcon filled={book.liked} />
           </button>
-          <button className="action-btn" onClick={handleEdit} aria-label="Edit">
+          <button
+            className="action-btn"
+            onClick={handleEdit}
+            aria-label="Edit"
+            disabled={!canWrite}
+            title={canWrite ? undefined : 'WRITE permission required'}
+          >
             <EditIcon />
           </button>
-          <button className="action-btn delete-btn" onClick={handleDelete} aria-label="Delete">
+          <button
+            className="action-btn delete-btn"
+            onClick={handleDelete}
+            aria-label="Delete"
+            disabled={!canDelete}
+            title={canDelete ? undefined : 'ADMIN role required to delete'}
+          >
             <TrashIcon />
           </button>
         </div>
