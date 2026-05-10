@@ -82,9 +82,81 @@
   transform: scaleX(1);
 }
 
+/* ── Navbar right group ─────────────────────────── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* Token status (role pill + timer) */
+.nav-token-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: border-color var(--transition);
+}
+
+.nav-token-status:hover { border-color: var(--accent-primary); }
+
+.role-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.role-pill--visitor { background: #e8e8e8; color: #555; }
+.role-pill--writer  { background: #d4edda; color: #1a5c30; }
+.role-pill--admin   { background: #fde8d8; color: #8b3a00; }
+
+[data-theme="dark"] .role-pill--visitor { background: #2e3448; color: #b0a898; }
+[data-theme="dark"] .role-pill--writer  { background: #1a3326; color: #6fcf97; }
+[data-theme="dark"] .role-pill--admin   { background: #3a2010; color: #e0a060; }
+
+.nav-timer {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: monospace;
+  min-width: 26px;
+}
+
+.nav-timer.expiring {
+  color: #e05a2b;
+  animation: nav-pulse 1s ease-in-out infinite;
+}
+
+@keyframes nav-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Get Token link */
+.nav-get-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--accent-primary) !important;
+  font-weight: 600;
+}
+
+.nav-get-token::after { display: none; }
+.nav-get-token:hover  { background: var(--bg-secondary); border-color: var(--accent-primary); }
+
 /* Theme toggle */
 .theme-toggle {
-  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 7px;
