@@ -1,30 +1,22 @@
 const API_BASE = 'http://localhost:3001';
-const TOKEN_KEY = 'shelf-jwt';
+const AUTH_STORAGE_KEY = 'shelf-auth'; // written by AuthContext
 
-async function fetchToken() {
-  const res = await fetch(`${API_BASE}/token?role=ADMIN`);
-  const { token } = await res.json();
-  localStorage.setItem(TOKEN_KEY, token);
-  return token;
-}
-
-function getStoredToken() {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (!token) return null;
+function getToken() {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    // Keep a 10s buffer before expiry
-    if (payload.exp * 1000 > Date.now() + 10_000) return token;
-  } catch { /* fall through */ }
-  return null;
-}
-
-async function getToken() {
-  return getStoredToken() ?? fetchToken();
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!stored) return null;
+    const { token, expiresAt } = JSON.parse(stored);
+    // Keep a 5s buffer so we don't send a token that expires mid-request
+    return expiresAt > Date.now() + 5_000 ? token : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function apiFetch(path, options = {}) {
-  const token = await getToken();
+  const token = getToken();
+  if (!token) throw new Error('NO_TOKEN');
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
@@ -33,18 +25,5 @@ export async function apiFetch(path, options = {}) {
       ...options.headers,
     },
   });
-  // Token may have just expired — refresh and retry once
-  if (res.status === 401) {
-    localStorage.removeItem(TOKEN_KEY);
-    const fresh = await fetchToken();
-    return fetch(`${API_BASE}${path}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${fresh}`,
-        ...options.headers,
-      },
-    });
-  }
   return res;
 }
