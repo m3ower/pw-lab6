@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
+import { useAuth } from '../context/AuthContext';
 import { useBookFilters, SORT_OPTIONS } from '../hooks/useBookFilters';
 import BookCard from '../components/BookCard';
 import ShelfView from '../components/ShelfView';
@@ -39,6 +41,10 @@ const STATUS_TABS = [
 
 export default function LibraryPage() {
   const { books, importBooks, loading } = useBooks();
+  const { auth, hasPermission } = useAuth();
+  const canWrite  = hasPermission('WRITE');
+  const canDelete = hasPermission('DELETE');
+
   if (loading) return <div className="container" style={{ paddingTop: '80px', color: 'var(--text-muted)' }}>Loading…</div>;
   const { filters, set, reset, filtered, allGenres, isFiltered } = useBookFilters(books);
 
@@ -127,11 +133,18 @@ export default function LibraryPage() {
               </svg>
             </button>
           </div>
-          <button className="btn-primary" onClick={openAdd}>
+          <button className="btn-primary" onClick={openAdd} disabled={!canWrite} title={canWrite ? undefined : 'WRITE permission required'}>
             <PlusIcon /> Add Book
           </button>
         </div>
       </header>
+
+      {!auth && (
+        <div className="no-token-banner">
+          You need a token to access the library.{' '}
+          <NavLink to="/token" className="no-token-link">Get a token →</NavLink>
+        </div>
+      )}
 
       {importError && (
         <p className="import-error">{importError}</p>

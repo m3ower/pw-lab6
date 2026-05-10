@@ -3,6 +3,25 @@
   padding-bottom: 80px;
 }
 
+/* ── No-token banner ────────────────────────────────────────── */
+.no-token-banner {
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 25%, transparent);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.no-token-link {
+  color: var(--accent-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.no-token-link:hover { text-decoration: underline; }
+
 /* ── Header ─────────────────────────────────────────────────── */
 .library-header {
   display: flex;
