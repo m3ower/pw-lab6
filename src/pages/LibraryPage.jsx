@@ -108,7 +108,7 @@ export default function LibraryPage() {
           <button className="btn-ghost" onClick={handleExport} title="Export library as JSON">
             Export
           </button>
-          <button className="btn-ghost" onClick={() => fileInputRef.current.click()} title="Import library from JSON">
+          <button className="btn-ghost" onClick={() => fileInputRef.current.click()} disabled={!canWrite} title={canWrite ? 'Import library from JSON' : 'WRITE permission required'}>
             Import
           </button>
           <input

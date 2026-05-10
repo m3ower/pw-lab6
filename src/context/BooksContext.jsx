@@ -87,8 +87,11 @@ export function BooksProvider({ children }) {
   // ── Import/Export ─────────────────────────────────────────
   async function importBooks(incoming, mode) {
     if (mode === 'replace') {
+      // Delete all existing books first, then add incoming
+      for (const b of books) await api.deleteBook(b.id).catch(() => {});
       for (const b of incoming) await api.createBook(b).catch(() => {});
     } else {
+      // Merge: only add books whose id doesn't already exist
       const existingIds = new Set(books.map(b => b.id));
       for (const b of incoming.filter(b => !existingIds.has(b.id)))
         await api.createBook(b).catch(() => {});
